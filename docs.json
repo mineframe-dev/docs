@@ -23,15 +23,15 @@
                     {
                         "group": "Servers",
                         "pages": [
-                            "servers/index.mdx",
-                            "servers/configuration.mdx"
+                            "servers/index",
+                            "servers/configuration"
                         ]
                     },
                     {
                         "group": "Workflow",
                         "pages": [
-                            "workflow/index.mdx",
-                            "workflow/production.mdx"
+                            "workflow/index",
+                            "workflow/production"
                         ]
                     }
                 ]
@@ -42,24 +42,24 @@
                     {
                         "group": "Plugstep",
                         "pages": [
-                            "plugstep/index.mdx",
-                            "plugstep/configuration.mdx",
-                            "plugstep/advanced.mdx"
+                            "plugstep/index",
+                            "plugstep/configuration",
+                            "plugstep/advanced"
                         ]
                     },
                     {
                         "group": "Liftoff",
                         "pages": [
-                            "liftoff/index.mdx",
-                            "liftoff/options.mdx"
+                            "liftoff/index",
+                            "liftoff/options"
                         ]
                     },
                     {
                         "group": "Schemastash",
                         "pages": [
-                            "schemastash/index.mdx",
-                            "schemastash/getting-started.mdx",
-                            "schemastash/workflow.mdx"
+                            "schemastash/index",
+                            "schemastash/getting-started",
+                            "schemastash/workflow"
                         ]
                     }
                 ]
