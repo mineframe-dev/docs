@@ -20,10 +20,32 @@ We plan on developing a tool to remove the need to manually add boilerplate when
   cd mineframe/dev && docker compose up --build
   ```
 - `mineframe/` Main directory for Mineframe related things. You should put stuff like your plugin source code outside of this.
-  - `dev/` Utilities and data specifically meant for development servers
-    - `Dockerfile` Dockerfile to be used for the devservers. Idea behind this is to not include server files in the image, and instead load those at startup from a volume.
+  - `servers/(server name)` Configuration data for a server
+    - `Dockerfile` Dockerfile for the specific server.
 
-      ```shellscript mineframe/dev/Dockerfile expandable
+      ```shellscript expandable
+      FROM ubuntu:22.04
+      
+      RUN apt-get update && \
+          apt-get install -y wget openjdk-21-jdk && \
+          rm -rf /var/lib/apt/lists/*
+      
+      WORKDIR /app
+      COPY server/ .
+      COPY entrypoint.sh /app/entrypoint.sh
+      RUN chmod +x /app/entrypoint.sh
+      
+      ENV RAM=2G
+      ENV PORT=25565
+      
+      ENTRYPOINT ["/app/entrypoint.sh"]
+      ```
+    - `entrypoint.sh`  Entrypoint for development server, copies data from server defenition at startup. (CODEBLOCK TODO)
+    - `server/` Server config, more info at [Server Configuration](/servers/configuration).
+  - `dev/` Utilities and data specifically meant for development servers
+    - `Dockerfile` Dockerfile to be used for the devservers. Idea behind this is to not include server files in the image, and instead load those at startup from a volume. (subject to changes upon Mineframe docker images)
+
+      ```shellscript expandable
       FROM ubuntu:22.04
       
       RUN apt-get update && \
@@ -42,7 +64,7 @@ We plan on developing a tool to remove the need to manually add boilerplate when
       ```
     - `docker-compose.yaml` Docker compose to spin up required servers and services for development. Span up using Docker compose, not Docker stack.
 
-      ```yaml mineframe/dev/docker-compose.yaml expandable
+      ```yaml expandable
       services:
         gate:
           image: ghcr.io/minekube/gate:d3c6a57
@@ -71,28 +93,32 @@ We plan on developing a tool to remove the need to manually add boilerplate when
       networks:
         dev:
       ```
+    - `entrypoint.sh`  Entrypoint for development server, copies data from server defenition at startup. (CODEBLOCK TODO)
+    - `gate.yaml` Gate configuration for development server
 
-### Step 2: Project structure
-
-<Accordion title="Project structure" icon="rocket">
-  
-</Accordion>
+      ```yaml
+      config:
+        bind: 0.0.0.0:26000
+        onlineMode: false
+        servers:
+          lobby: lobby:26001
+        try:
+          - lobby
+        forceKeyAuthentication: false
+      ```
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
+Now that you have a Mineframe network scaffolded, check out these resources next!
 
 <CardGroup cols={2}>
-  <Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-    Learn MDX syntax and start writing your documentation.
+  <Card title="Server Configuration" icon="gear" href="/servers/configuration">
+    Learn how server configuration is handled in the Mineframe stack.
   </Card>
-  <Card title="Customize style" icon="palette" href="/essentials/settings">
-    Make your docs match your brand perfectly.
+  <Card title="Workflow" icon="flower" href="/workflow">
+    Understand how to operate a Mineframe-based server.
   </Card>
-  <Card title="Add code examples" icon="square-code" href="/essentials/code">
+  <Card title="Deploying to Production" icon="crown" href="/workflow/production">
     Include syntax-highlighted code blocks.
-  </Card>
-  <Card title="API documentation" icon="code" href="/api-reference/introduction">
-    Auto-generate API docs from OpenAPI specs.
   </Card>
 </CardGroup>
