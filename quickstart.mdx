@@ -9,15 +9,6 @@ We plan on developing a tool to remove the need to manually add boilerplate when
 
 ## Manual setup
 
-### Step 1: Prerequisites
-
-You'll need the following things before getting started:
-
-- Unix-like development enviroment (Linux, MacOS, WSL)
-- Server(s) with Docker and Docker swarm installed
-- A Git repository
-- Basic knowledge in GNU utilities and Docker 
-
 ### Step 2: Project structure
 
 - `docker-compose.yml` Docker Compose file to be used with Docker Stack in production deployments
@@ -28,14 +19,63 @@ You'll need the following things before getting started:
   
   cd mineframe/dev && docker compose up --build
   ```
-- `mineframe/` Main directory for Mineframe related things. You should put stuff like your plugin source code outside of this. 
+- `mineframe/` Main directory for Mineframe related things. You should put stuff like your plugin source code outside of this.
   - `dev/` Utilities and data specifically meant for development servers
+    - `Dockerfile` Dockerfile to be used for the devservers. Idea behind this is to not include server files in the image, and instead load those at startup from a volume.
 
-### Step 3: Go live
+      ```shellscript mineframe/dev/Dockerfile expandable
+      FROM ubuntu:22.04
+      
+      RUN apt-get update && \
+          apt-get install -y wget rsync openjdk-21-jdk && \
+          rm -rf /var/lib/apt/lists/*
+      
+      WORKDIR /app
+      COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+      RUN chmod +x /usr/local/bin/entrypoint.sh
+      RUN ls /usr/local/bin
+      
+      ENV RAM=2G
+      ENV PORT=25565
+      
+      ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+      ```
+    - `docker-compose.yaml` Docker compose to spin up required servers and services for development. Span up using Docker compose, not Docker stack.
 
-<Accordion title="Publish your docs" icon="rocket">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
+      ```yaml mineframe/dev/docker-compose.yaml expandable
+      services:
+        gate:
+          image: ghcr.io/minekube/gate:d3c6a57
+          container_name: gate
+          restart: unless-stopped
+          networks:
+            - dev
+          volumes:
+            - ./gate.yaml:/config.yml
+          ports:
+            - "26000:26000"
+        lobby: # lobby used as example, change to the server you need.
+          build:
+            context: .
+            dockerfile: Dockerfile
+          networks:
+            - dev
+          volumes:
+            - ../servers/lobby/server:/initial_app:ro # lobby used as example, change to the server you need.
+            - ./.data/lobby:/persistent_app # lobby used as example, change to the server you need.
+          ports:
+            - "26001:26001"
+          environment:
+            - PORT=26001
+      
+      networks:
+        dev:
+      ```
+
+### Step 2: Project structure
+
+<Accordion title="Project structure" icon="rocket">
+  
 </Accordion>
 
 ## Next steps
@@ -56,7 +96,3 @@ Now that you have your docs running, explore these key features:
     Auto-generate API docs from OpenAPI specs.
   </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
