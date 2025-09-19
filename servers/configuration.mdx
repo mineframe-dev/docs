@@ -1,5 +1,38 @@
 ---
-title: 'New file'
-description: 'Description of your new file.'
+title: "Server Configuration"
+description: "Mineframe takes a unique approach to server configuration, it may take a bit to get used to, but it is powerful!"
 ---
 
+All servers are composed from a server configuration. Server configurations contain files that should be placed in the directory of the server, as well as the plugstep.toml file.
+
+## How does it work?
+
+Server configuration works by copying all files in `mineframe/servers/(name)/server` to the Docker image's app directory, where the server launches from. This means you can include configuration files, even partial ones due to the way most plugins and server components handle missing fields. This creates an immutable enviroment, where you can make configurations once, and deploy them multiple times.
+
+## Example configuration
+
+- `eula.txt` Necessary for the server to start up.
+
+  ```bash
+  eula=true
+  ```
+- `spigot.yml` Bungeecord must be enabled for the server to work with Gate.
+
+  ```yaml
+  settings:
+  	bungeecord: true
+  ```
+- `server.properties` Just an example of setting a value, not needed to start the server
+
+  ```bash
+  max-players=50
+  ```
+- `plugstep.toml` Plugstep configuration file, refer to Configuring Plugstep.
+
+  ```c#
+  [server]
+  vendor = "papermc"
+  project = "paper"
+  minecraft_version = "1.21.8"
+  version = "5"
+  ```
